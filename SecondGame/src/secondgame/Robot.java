@@ -47,7 +47,7 @@ public class Robot {
 		if (speedX == 0 || speedX < 0) {
 			bg1.setSpeedX(0);
 			bg2.setSpeedX(0);
-			System.out.println("Do not scroll background");
+			//System.out.println("Do not scroll background");
 		}
 		if (centerX <= 200 && speedX > 0) { // If the character's centerX is in the left 150 pixels
 			centerX += speedX; // Change centerX by adding speedX.
@@ -55,7 +55,7 @@ public class Robot {
 		if (speedX > 0 && centerX > 200) {
 			bg1.setSpeedX(-MOVESPEED);
 			bg2.setSpeedX(-MOVESPEED);
-			System.out.println("Scroll background here");
+			//System.out.println("Scroll background here");
 		}
 
 		// Updates Y position

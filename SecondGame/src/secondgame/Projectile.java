@@ -4,22 +4,20 @@ public class Projectile {
 
 	private int x, y, speedX;
 	private boolean visible;
-	
+
 	public Projectile(int startX, int startY) {
 		x = startX;
 		y = startY;
 		speedX = 7;
 		visible = true;
 	}
-	
+
 	public void update() {
 		x += speedX;
-		if (x > 800) {
+		if (x > 600) {
 			visible = false;
 		}
 	}
-	
-	
 
 	public int getX() {
 		return x;
