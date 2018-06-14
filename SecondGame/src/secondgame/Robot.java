@@ -1,5 +1,7 @@
 package secondgame;
 
+import java.util.ArrayList;
+
 public class Robot {
 	/*
 	 * In Java, Class variables should be private so that only it's methods can
@@ -11,10 +13,10 @@ public class Robot {
 	 * Origin (0,0) is at TOP LEFT. This means that if character has positive
 	 * speedY, he is FALLING, not RISING
 	 */
-	final int JUMPSEED = -15;
+	final int JUMPSPEED = -15;
 	final int MOVESPEED = 5;
 	final int GROUND = 382;
-	
+
 	private int centerX = 100;
 	private int centerY = GROUND;
 
@@ -26,7 +28,7 @@ public class Robot {
 	private boolean movingLeft = false;
 	private boolean movingRight = false;
 	private boolean ducked = false;
-	
+
 	private static Background bg1 = StartClass.getBg1();
 	private static Background bg2 = StartClass.getBg2();
 
@@ -34,37 +36,40 @@ public class Robot {
 	private int speedX = 0;
 	private int speedY = 1;
 
+	private ArrayList<Projectile> projectiles = new ArrayList<Projectile>();
+
 	public void update() { // update() / this method will be called on each iteration of the for loop
 
 		// Moves character or scrolls background accordingly
 		if (speedX < 0) {
 			centerX += speedX; // This changes centerX by adding speedX.
-		} else if (speedX == 0) {
+		}
+		if (speedX == 0 || speedX < 0) {
+			bg1.setSpeedX(0);
+			bg2.setSpeedX(0);
 			System.out.println("Do not scroll background");
-		} else {
-			if (centerX <= 150) { // If the character's centerX is in the left 150 pixels
-				centerX += speedX; // Change centerX by adding speedX.
-			} else {
-				System.out.println("Scroll background here");
-			}
+		}
+		if (centerX <= 200 && speedX > 0) { // If the character's centerX is in the left 150 pixels
+			centerX += speedX; // Change centerX by adding speedX.
+		}
+		if (speedX > 0 && centerX > 200) {
+			bg1.setSpeedX(-MOVESPEED);
+			bg2.setSpeedX(-MOVESPEED);
+			System.out.println("Scroll background here");
 		}
 
 		// Updates Y position
-		if (centerY + speedY >= 382) {
-			// 382 is where the character's centerY would be if he were standing on the
-			// ground.
-			centerY = 382;
-		} else {
-			centerY += speedY; // Add speedY to centerY to determine its new position
+		if (centerY + speedY >= GROUND) {
+			centerY = GROUND;
 		}
 
 		// Handles jumping
-		if (jumped == true) {
+		if (jumped) {
 			speedY += 1; // While the character is in the air, add 1 to his speedY.
 			// NOTE: This will bring the character downwards!
 
-			if (centerY + speedY >= 382) {
-				centerY = 382;
+			if (centerY + speedY >= GROUND) {
+				centerY = GROUND;
 				speedY = 0;
 				jumped = false;
 			}
@@ -78,28 +83,56 @@ public class Robot {
 	}
 
 	public void moveRight() {
-		speedX = 6; // Sets the character's horizontal speed (speedX) as 6.
+		if (!ducked)
+			speedX = MOVESPEED; // Sets the character's horizontal speed (speedX) as 6.
 	}
 
 	public void moveLeft() {
-		speedX = -6; // Sets character's horizontal speed (speedX) as -6.
+		if (!ducked)
+			speedX = -MOVESPEED; // Sets character's horizontal speed (speedX) as -6.
+	}
+
+	public void stopRight() {
+		setMovingRight(false);
+		stop();
+	}
+
+	public void stopLeft() {
+		setMovingLeft(false);
+		stop();
 	}
 
 	public void stop() {
-		speedX = 0; // Sets character's horizontal speed (speedX) as 0.
-	}
+		if (!isMovingRight() && !isMovingLeft())
+			speedX = 0; // Sets character's horizontal speed (speedX) as 0.
 
-	public void jump() {
-		if (jumped == false) {
-			speedY = -15; // Sets the vertical speed (speedY) as -15.
-			jumped = true;
+		if (!isMovingRight() && isMovingLeft()) {
+			moveLeft();
+		}
+
+		if (isMovingRight() && !isMovingLeft()) {
+			moveRight();
 		}
 	}
 
-	/* Getters and Setters, common practice is to set class-wide variables as
-	   PRIVATE. For other classes to access private variables, they must use helper
-	   functions known as getters and setters. */
-	   
+	public void jump() {
+		if (!jumped) {
+			speedY = JUMPSPEED; // Sets the vertical speed (speedY) as -15.
+			jumped = !jumped;
+		}
+	}
+
+	public void shoot() {
+		Projectile p = new Projectile(centerX + 50, centerY - 25);
+		projectiles.add(p);
+	}
+
+	/*
+	 * Getters and Setters, common practice is to set class-wide variables as
+	 * PRIVATE. For other classes to access private variables, they must use helper
+	 * functions known as getters and setters.
+	 */
+
 	public int getCenterX() {
 		return centerX;
 	}
@@ -138,5 +171,33 @@ public class Robot {
 
 	public void setSpeedY(int speedY) {
 		this.speedY = speedY;
+	}
+
+	public boolean isMovingLeft() {
+		return movingLeft;
+	}
+
+	public boolean isMovingRight() {
+		return movingRight;
+	}
+
+	public boolean isDucked() {
+		return ducked;
+	}
+
+	public ArrayList<Projectile> getProjectiles() {
+		return projectiles;
+	}
+
+	public void setMovingLeft(boolean movingLeft) {
+		this.movingLeft = movingLeft;
+	}
+
+	public void setMovingRight(boolean movingRight) {
+		this.movingRight = movingRight;
+	}
+
+	public void setDucked(boolean ducked) {
+		this.ducked = ducked;
 	}
 }

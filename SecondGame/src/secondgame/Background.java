@@ -1,6 +1,6 @@
 package secondgame;
 
-public class Background {
+class Background {
 	
 	private int bgX, bgY, speedX;
 	
